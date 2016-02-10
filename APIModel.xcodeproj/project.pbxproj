@@ -52,6 +52,8 @@
 		6377EB3DDC97316FEB89B483 /* Pods_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 111CBA07581C3F21B9A60B05 /* Pods_Tests.framework */; };
 		6D47F25F1AF786C8007DEF9A /* DoubleTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D47F25E1AF786C8007DEF9A /* DoubleTransform.swift */; };
 		6DE1A3261AFB6035002CB25E /* Object+ApiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE1A3251AFB6035002CB25E /* Object+ApiModel.swift */; };
+		B04B990E1C6A21B900D43603 /* ForeignKeyModelTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04B990D1C6A21B900D43603 /* ForeignKeyModelTransform.swift */; };
+		B0A634AE1C6A4F510052E2D4 /* ForeignKeyModelTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A634AD1C6A4F510052E2D4 /* ForeignKeyModelTransformTests.swift */; };
 		BE7938AC4C471E976B2F7384 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAB40266BE10F16D08FF30F4 /* Pods.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
@@ -115,6 +117,8 @@
 		401654F7FCB7720D7CB61B36 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		6D47F25E1AF786C8007DEF9A /* DoubleTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleTransform.swift; sourceTree = "<group>"; };
 		6DE1A3251AFB6035002CB25E /* Object+ApiModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.swift; path = "Object+ApiModel.swift"; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
+		B04B990D1C6A21B900D43603 /* ForeignKeyModelTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForeignKeyModelTransform.swift; sourceTree = "<group>"; };
+		B0A634AD1C6A4F510052E2D4 /* ForeignKeyModelTransformTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForeignKeyModelTransformTests.swift; sourceTree = "<group>"; };
 		CAE67201E17E0F2C48C5F0C0 /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		CF72443F4DDF34F24C39BA26 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		DAB40266BE10F16D08FF30F4 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,6 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				0370B79D1AAF82630085F048 /* ModelTransform.swift */,
+				B04B990D1C6A21B900D43603 /* ForeignKeyModelTransform.swift */,
 				0370B7A71AAF82630085F048 /* Transform.swift */,
 				03E79CEA1BAD5CE9001258A2 /* DefaultTransform.swift */,
 				03E79CEB1BAD5CE9001258A2 /* FloatTransform.swift */,
@@ -250,6 +255,7 @@
 			children = (
 				03B4078D1C3BB57000E46AD3 /* NSDateTransformTests.swift */,
 				03CA2D8F1C503F51008F0AF1 /* ModelTransformTests.swift */,
+				B0A634AD1C6A4F510052E2D4 /* ForeignKeyModelTransformTests.swift */,
 				03CA2D921C50469D008F0AF1 /* ArrayTransformTests.swift */,
 			);
 			name = Transforms;
@@ -521,6 +527,7 @@
 				207552BC1C484AD4009D519A /* Post.swift in Sources */,
 				03CA2D931C50469D008F0AF1 /* ArrayTransformTests.swift in Sources */,
 				03CA2D901C503F51008F0AF1 /* ModelTransformTests.swift in Sources */,
+				B0A634AE1C6A4F510052E2D4 /* ForeignKeyModelTransformTests.swift in Sources */,
 				2052AD511C485AB900C54C6A /* ApiFormTests.swift in Sources */,
 				2052AD4F1C4850A900C54C6A /* ApiManagerResponseTests.swift in Sources */,
 				03B4078E1C3BB57000E46AD3 /* NSDateTransformTests.swift in Sources */,
@@ -544,6 +551,7 @@
 				03E79CED1BAD5CE9001258A2 /* FloatTransform.swift in Sources */,
 				038436CD1BB69D4300DCCCF0 /* ApiConfigurable.swift in Sources */,
 				0370B7BD1AAF82630085F048 /* StringTransform.swift in Sources */,
+				B04B990E1C6A21B900D43603 /* ForeignKeyModelTransform.swift in Sources */,
 				033DEF221B1CDEBE00266453 /* JSONParser.swift in Sources */,
 				0370B7BE1AAF82630085F048 /* Transform.swift in Sources */,
 				0326C5161AFB7B79005FC057 /* Pluralize.swift in Sources */,

@@ -27,6 +27,8 @@ public class ApiModelResponse<ModelType:Object where ModelType:ApiModel> {
     public var responseData: [String:AnyObject]?
     public var responseObject: [String:AnyObject]?
     public var responseArray: [AnyObject]?
+    public var object: ModelType?
+    public var array: [ModelType]?
     public var errors: [String:[String]]?
     public var rawResponse: ApiResponse?
     
@@ -45,51 +47,6 @@ public class ApiModelResponse<ModelType:Object where ModelType:ApiModel> {
         } else {
             return .None
         }
-    }
-    
-    var _object: ModelType?
-    var _parsedObject = false
-    
-    public var object: ModelType? {
-        if _parsedObject {
-            return _object
-        }
-        
-        _parsedObject = true
-        
-        if let responseObject = responseObject {
-            _object = fromApi(responseObject)
-        }
-        
-        return _object
-    }
-    
-    var _array: [ModelType]? = nil
-    var _parsedArray = false
-    
-    public var array: [ModelType]? {
-        if _parsedArray {
-            return _array
-        }
-        _parsedArray = true
-        
-        if let arrayData = responseArray {
-            _array = []
-            
-            for modelData in arrayData {
-                if let modelDictionary = modelData as? [String:AnyObject] {
-                    _array!.append(fromApi(modelDictionary))
-                }
-            }
-        }
-        
-        return _array
-    }
-    
-    func fromApi(apiResponse: [String:AnyObject]) -> ModelType {
-        let newModel = ModelType()
-        newModel.updateFromDictionary(apiResponse)
-        return newModel
     }
 }
 
@@ -156,6 +113,33 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
         if let errors = response.errors {
             self.errors = errors
         }
+    }
+    
+    public class func fromApi(apiResponse: [String:AnyObject], realm: Realm?) -> ModelType {
+        let primaryKey = ModelType.primaryKey()
+        let primaryValue = apiResponse[primaryKey!]
+        var newModel : ModelType?
+        
+        if let primaryValue = primaryValue {
+            newModel = realm?.objectForPrimaryKey(ModelType.self, key: primaryValue)
+        }
+        
+        if newModel == nil {
+            newModel = ModelType()
+            
+            if let primaryKey = primaryKey,
+                let primaryValue = primaryValue as? ApiId
+                where !primaryValue.isEmpty
+            {
+                newModel![primaryKey] = primaryValue
+            }
+        }
+        
+        realm?.add(newModel!)
+        
+        newModel!.updateFromDictionary(apiResponse)
+        
+        return newModel!
     }
     
     // api-model style methods
@@ -293,13 +277,36 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
                 response.responseData = data as? [String:AnyObject]
                 
                 if let responseObject = self.objectFromResponseForNamespace(data, namespace: call.namespace) {
+                        
+                    let realm = try! Realm()
+                    realm.beginWrite()
+                        
                     response.responseObject = responseObject
+                    response.object = self.fromApi(responseObject, realm: realm)
                     
+                    realm.add(response.object!)
+                        
+                    try! realm.commitWrite()
+                	
                     if let errors = self.errorFromResponse(responseObject, error: error) {
                         response.errors = errors
                     }
                 } else if let arrayData = self.arrayFromResponseForNamespace(data, namespace: call.namespace) {
                     response.responseArray = arrayData
+                    response.array = []
+                        
+                    let realm = try! Realm()
+                    realm.beginWrite()
+                        
+                    for modelData in arrayData {
+                          if let modelDictionary = modelData as? [String:AnyObject] {
+                             let modelItem = self.fromApi(modelDictionary, realm: realm)
+                             realm.add(modelItem)
+                             response.array?.append(modelItem)
+                         }
+                    }
+                        
+                    try! realm.commitWrite()
                 }
             }
             
@@ -312,6 +319,7 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
     }
     
     private class func arrayFromResponseForNamespace(data: AnyObject, namespace: String) -> [AnyObject]? {
+        if let arrayData = data as? [AnyObject] { return arrayData }
         return (data[namespace] as? [AnyObject]) ?? (data[namespace.pluralize()] as? [AnyObject])
     }
     

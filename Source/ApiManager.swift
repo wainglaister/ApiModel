@@ -67,11 +67,7 @@ public class ApiManager {
         
         performRequest(request) { response in
             parser.parse(response.responseBody ?? "") { parsedResponse in
-                let (finalResponse, errors) = self.handleResponse(
-                    response,
-                    parsedResponse: parsedResponse,
-                    apiConfig: apiConfig
-                )
+                let (finalResponse, errors) = self.handleResponse(response, parsedResponse: parsedResponse, apiConfig: apiConfig)
                 
                 responseHandler(finalResponse, errors)
             }
@@ -92,7 +88,6 @@ public class ApiManager {
             response.error = ApiResponseError.InvalidRequest(code: response.status ?? 0)
         }
         
-        response.parsedResponse = parsedResponse
         if let nestedResponse = parsedResponse as? [String:AnyObject] where !apiConfig.rootNamespace.isEmpty {
             response.parsedResponse = fetchPathFromDictionary(apiConfig.rootNamespace, dictionary: nestedResponse)
         } else {
@@ -105,13 +100,12 @@ public class ApiManager {
     func performRequest(request: ApiRequest, responseHandler: (ApiResponse) -> Void) {
         let response = ApiResponse(request: request)
         
-        Alamofire.request(
+        config.manager.request(
             request.method,
             request.url,
             parameters: request.parameters,
             encoding: request.encoding,
-            headers: request.headers
-        )
+            headers: request.headers)
         .responseString { alamofireResponse in
             response.responseBody = alamofireResponse.result.value
             if let error = alamofireResponse.result.error {

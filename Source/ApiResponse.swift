@@ -42,7 +42,7 @@ public class ApiResponse {
     
     public var isInvalid: Bool {
         if let status = status {
-            return status >= 400 && status <= 499
+            return status >= 400
         } else {
             return true
         }
