@@ -133,9 +133,10 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
             {
                 newModel![primaryKey] = primaryValue
             }
+            
+            apiConfig.addHook(realm, newModel!)
         }
         
-        apiConfig.addHook(realm, newModel!)
         newModel!.updateFromDictionary(apiResponse)
         apiConfig.modifyHook(realm, newModel!)
         
