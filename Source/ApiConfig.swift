@@ -9,6 +9,7 @@ public class ApiConfig {
     public var requestLogging: Bool = true
     public var rootNamespace = ""
     public var addHook: (Realm?, Object) -> Void = { $0?.add($1) }
+    public var modifyHook: (Realm?, Object) -> Void = { $0?.add($1) }
     public var deleteHook: (Realm?, Object) -> Void = { $0?.delete($1) }
 
     public required init() {
