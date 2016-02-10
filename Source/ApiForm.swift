@@ -136,8 +136,8 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
         }
         
         apiConfig.addHook(realm, newModel!)
-        
         newModel!.updateFromDictionary(apiResponse)
+        apiConfig.addHook(realm, newModel!)
         
         return newModel!
     }
