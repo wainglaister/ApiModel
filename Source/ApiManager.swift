@@ -103,7 +103,7 @@ public class ApiManager {
         config.manager.request(
             request.method,
             request.url,
-            parameters: request.parameters,
+            parameters: (request.parameters.count > 0 ? request.parameters : nil),
             encoding: request.encoding,
             headers: request.headers)
         .responseString { alamofireResponse in
