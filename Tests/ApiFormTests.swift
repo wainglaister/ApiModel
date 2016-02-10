@@ -175,4 +175,43 @@ class ApiFormTests: XCTestCase {
             XCTAssertNil(err, "Received data should be nil")
         }
     }
+    
+    func testAddHook() {
+        var called = false
+        
+        let config = ApiConfig(host: self.host)
+        config.addHook = { realm, object in
+            called = true
+            realm?.add(object)
+        }
+        
+        ApiSingleton.setInstance(ApiManager(config: config))
+        
+        var theResponse: [Post]?
+        let readyExpectation = self.expectationWithDescription("ready")
+        
+        stub({_ in true}) { request in
+            let stubPath = OHPathForFile("posts.json", self.dynamicType)
+            return fixture(stubPath!, headers: ["Content-Type":"application/json"])
+        }
+        
+        Api<Post>.findArray { response in
+            theResponse = response
+            
+            XCTAssertEqual(response.count, 2)
+            XCTAssertEqual(response.first!.id, "1")
+            XCTAssertEqual(response.last!.id, "2")
+            
+            readyExpectation.fulfill()
+            OHHTTPStubs.removeAllStubs()
+        }
+        
+        
+        self.waitForExpectationsWithTimeout(self.timeout) { err in
+            // By the time we reach this code, the while loop has exited
+            // so the response has arrived or the test has timed out
+            XCTAssertNotNil(theResponse, "Received data should not be nil")
+            XCTAssertTrue(called, "The hook should have been called")
+        }
+    }
 }

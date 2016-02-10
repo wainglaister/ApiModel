@@ -115,7 +115,7 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
         }
     }
     
-    public class func fromApi(apiResponse: [String:AnyObject], realm: Realm?) -> ModelType {
+    public class func fromApi(apiConfig: ApiConfig, apiResponse: [String:AnyObject], realm: Realm?) -> ModelType {
         let primaryKey = ModelType.primaryKey()
         let primaryValue = apiResponse[primaryKey!]
         var newModel : ModelType?
@@ -135,7 +135,7 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
             }
         }
         
-        realm?.add(newModel!)
+        apiConfig.addHook(realm, newModel!)
         
         newModel!.updateFromDictionary(apiResponse)
         
@@ -265,52 +265,49 @@ public class Api<ModelType:Object where ModelType:ApiModel> {
             path: call.path,
             parameters: call.parameters,
             apiConfig: apiConfig
-        ) { data, error in
-            let response = ApiModelResponse<ModelType>()
-            response.rawResponse = data
-            
-            if let errors = self.errorFromResponse(nil, error: error) {
-                response.errors = errors
-            }
-            
-            if let data: AnyObject = data?.parsedResponse {
-                response.responseData = data as? [String:AnyObject]
+            ) { data, error in
+                let response = ApiModelResponse<ModelType>()
+                response.rawResponse = data
                 
-                if let responseObject = self.objectFromResponseForNamespace(data, namespace: call.namespace) {
-                        
-                    let realm = try! Realm()
-                    realm.beginWrite()
-                        
-                    response.responseObject = responseObject
-                    response.object = self.fromApi(responseObject, realm: realm)
-                    
-                    realm.add(response.object!)
-                        
-                    try! realm.commitWrite()
-                	
-                    if let errors = self.errorFromResponse(responseObject, error: error) {
-                        response.errors = errors
-                    }
-                } else if let arrayData = self.arrayFromResponseForNamespace(data, namespace: call.namespace) {
-                    response.responseArray = arrayData
-                    response.array = []
-                        
-                    let realm = try! Realm()
-                    realm.beginWrite()
-                        
-                    for modelData in arrayData {
-                          if let modelDictionary = modelData as? [String:AnyObject] {
-                             let modelItem = self.fromApi(modelDictionary, realm: realm)
-                             realm.add(modelItem)
-                             response.array?.append(modelItem)
-                         }
-                    }
-                        
-                    try! realm.commitWrite()
+                if let errors = self.errorFromResponse(nil, error: error) {
+                    response.errors = errors
                 }
-            }
-            
-            callback?(response)
+                
+                if let data: AnyObject = data?.parsedResponse {
+                    response.responseData = data as? [String:AnyObject]
+                    
+                    if let responseObject = self.objectFromResponseForNamespace(data, namespace: call.namespace) {
+                        
+                        let realm = try! Realm()
+                        realm.beginWrite()
+                        
+                        response.responseObject = responseObject
+                        response.object = self.fromApi(apiConfig, apiResponse: responseObject, realm: realm)
+                        
+                        try! realm.commitWrite()
+                        
+                        if let errors = self.errorFromResponse(responseObject, error: error) {
+                            response.errors = errors
+                        }
+                    } else if let arrayData = self.arrayFromResponseForNamespace(data, namespace: call.namespace) {
+                        response.responseArray = arrayData
+                        response.array = []
+                        
+                        let realm = try! Realm()
+                        realm.beginWrite()
+                        
+                        for modelData in arrayData {
+                            if let modelDictionary = modelData as? [String:AnyObject] {
+                                let modelItem = self.fromApi(apiConfig, apiResponse: modelDictionary, realm: realm)
+                                response.array?.append(modelItem)
+                            }
+                        }
+                        
+                        try! realm.commitWrite()
+                    }
+                }
+                
+                callback?(response)
         }
     }
     

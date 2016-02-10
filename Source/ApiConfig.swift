@@ -1,4 +1,5 @@
 import Alamofire
+import RealmSwift
 
 public class ApiConfig {
     public var host: String = ""
@@ -7,6 +8,8 @@ public class ApiConfig {
     public var encoding: ParameterEncoding = .URL
     public var requestLogging: Bool = true
     public var rootNamespace = ""
+    public var addHook: (Realm?, Object) -> Void = { $0?.add($1) }
+    public var deleteHook: (Realm?, Object) -> Void = { $0?.delete($1) }
 
     public required init() {
     }
